@@ -7,7 +7,6 @@
 <project basedir="." default="build" name="FileConsumer">
 	<property environment="env" />
 	<property name="ECLIPSE_HOME" value="../../Tools/eclipseMars/" />
-	<property name="LogParser.location" value="../LogParser" />
 	<property name="debuglevel" value="source,lines,vars" />
 	<property name="target" value="1.8" />
 	<property name="source" value="1.8" />
@@ -18,17 +17,9 @@
 	<property name="dist.lib.dir" location="dist/lib" />
 	<property name="lib.dir" value="lib" />
 	<property name="main-class" value="com.albertodepaola.fileconsumer.FileConsumer" />
-	<path id="LogParser.classpath">
-		<pathelement location="${LogParser.location}/bin" />
-		<pathelement location="${LogParser.location}/lib/flyway-core-5.0.6.jar" />
-		<pathelement location="${LogParser.location}/lib/mysql-connector-java-8.0.8-dmr-bin.jar" />
-		<pathelement location="${LogParser.location}/lib/gson-2.8.2.jar" />
-		<pathelement location="${LogParser.location}/lib/moneta-1.1.jar" />
-		<pathelement location="${LogParser.location}/lib/money-api-1.0.1.jar" />
-	</path>
 	<path id="FileConsumer.classpath">
 		<pathelement location="bin" />
-		<path refid="LogParser.classpath" />
+		<pathelement location="lib/parser.jar" />
 	</path>
 	<target name="init">
 		<mkdir dir="bin" />
@@ -41,17 +32,9 @@
 	<target name="clean">
 		<delete dir="bin" />
 	</target>
-	<target depends="clean" name="cleanall">
-		<ant antfile="build.xml" dir="${LogParser.location}" inheritAll="false" target="clean" />
-	</target>
+	<target depends="clean" name="cleanall" />
 	<target depends="build-subprojects,build-project" name="build" />
-	<target name="build-subprojects">
-		<ant antfile="build.xml" dir="${LogParser.location}" inheritAll="false" target="build-project">
-			<propertyset>
-				<propertyref name="build.compiler" />
-			</propertyset>
-		</ant>
-	</target>
+	<target name="build-subprojects" />
 	<target depends="init" name="build-project">
 		<echo message="${ant.project.name}: ${ant.file}" />
 		<javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
@@ -110,7 +93,7 @@
 		<mkdir dir="${dist.dir}" />
 		<mkdir dir="${dist.lib.dir}" />
 
-		<jar destfile="${dist.dir}/{projectName}.jar" basedir="${build.dir}">
+		<jar destfile="${dist.dir}/${projectName}.jar" basedir="${build.dir}">
 			<zipfileset src="${dist.lib.dir}/dependencies-all.jar" excludes="META-INF/*.SF" />
 		</jar>
 
