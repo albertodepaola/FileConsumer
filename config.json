@@ -1,0 +1,37 @@
+{
+	"documentation": "This file contains the column definition of the log file, allowing the parser to be used with different log files with different columns. Each column definition has to have an index value, that correlates with the position in the log file",
+	"logConfiguration": {
+		"date": "0",
+		"ipv4": "1",
+		"request": "2",
+		"status": "3",
+		"userAgent": "4",
+		"cpf": "1",
+		"name": "2",
+		"salary": "3",
+		"cnpj": "1",
+		"businessName": "2",
+		"businessArea": "3",
+		"salesId": "1",
+		"salesItemList": "2",
+		"salesmanName": "3"
+	},
+	"saveLogToDatabase": "true",
+	"databaseConfiguration": {
+		"url": "jdbc:mysql://localhost",
+		"port": "3306",
+		"database": "logparser",
+		"user": "root",
+		"password": "rootroot",
+		"aditionalParameters": "&rewriteBatchedStatements=true"
+	},
+	"simpleDateFormat": "yyyy-MM-dd HH:mm:ss.S",
+	"batchSize": "10000",
+	"lineSeparator": "ç",
+	"parser": "AB",
+	"salesmanType": "001",
+	"clientType": "002",
+	"salesType": "003"
+		
+	
+}
