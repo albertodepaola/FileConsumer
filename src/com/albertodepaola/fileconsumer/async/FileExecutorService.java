@@ -46,21 +46,10 @@ public class FileExecutorService {
 		
 	}
 	
-	private static Callable<Tuple<String, File>> callable(File fileToParse, int seconds) {
+	private static Callable<Tuple<String, File>> callable(File fileToParse) {
 		return () -> {
 			String status = "OK";
 			try {
-				System.out.println("starting parse");
-				int min = 0;
-				int max = 10;
-				Random random = new Random();
-				int rand = random.nextInt(max - min + 1) + min;
-				System.out.println("Sleeping " + seconds);
-				TimeUnit.SECONDS.sleep(seconds);
-				// TODO parse file using parser
-				
-				
-				
 				Map<String, String> argumentsMap = new HashMap<>();
 				
 				argumentsMap.put("accesslog", fileToParse.getAbsolutePath());
@@ -71,10 +60,7 @@ public class FileExecutorService {
 			
 				Parser<ABParserResult> abparser = new ParserFactory<ABParserResult>().createParser(new ABParserFactory(), argumentsMap);
 				
-				long startTime = System.currentTimeMillis();
 				ParserResult<ABParserResult> parse = abparser.parse();
-				long diff = System.currentTimeMillis() - startTime;
-				System.out.println("Parse time: " + diff + " - " + (diff / 1000));
 				
 				String name = fileToParse.getName();
 				
@@ -93,9 +79,9 @@ public class FileExecutorService {
 	}
 
 
-	public static Future<Tuple<String, File>> submitFile(File file, int seconds) {
+	public static Future<Tuple<String, File>> submitFile(File file) {
 		
-		Callable<Tuple<String, File>> c = callable(file, seconds);
+		Callable<Tuple<String, File>> c = callable(file);
 //		CallableParse c = new FileExecutorService().new CallableParse(file);
 		ExecutorService ex = getExecutor();
 		

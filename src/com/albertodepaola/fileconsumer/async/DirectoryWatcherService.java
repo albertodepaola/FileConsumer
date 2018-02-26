@@ -56,12 +56,10 @@ public class DirectoryWatcherService {
 					return name.endsWith(".dat");
 				}
 			});
-			int seconds = 15;
 			for (String filename : list) {
 				System.out.println("Filename: " + filename);
 				Future<Tuple<String, File>> existingFile = FileExecutorService
-						.submitFile(dirIn.resolve(filename).toFile(), seconds);
-				seconds = seconds - 5;
+						.submitFile(dirIn.resolve(filename).toFile());
 				
 				results.add(existingFile);
 			}
@@ -75,7 +73,6 @@ public class DirectoryWatcherService {
 			while ((key = watcher.take()) != null) {
 				key.reset();
 
-				seconds = 45;
 				for (WatchEvent<?> event : key.pollEvents()) {
 					System.out.println("Event kind:" + event.kind() + ". File affected: " + event.context() + ".");
 
@@ -87,10 +84,8 @@ public class DirectoryWatcherService {
 					WatchEvent<Path> ev = (WatchEvent<Path>) event;
 
 					Future<Tuple<String, File>> submitFile = FileExecutorService
-							.submitFile(dirIn.resolve(ev.context()).toFile(), seconds);
+							.submitFile(dirIn.resolve(ev.context()).toFile());
 
-					seconds = seconds - 5;
-					
 					results.add(submitFile);
 
 				}
