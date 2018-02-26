@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="FileConsumer">
+	<property environment="env" />
+	<property name="ECLIPSE_HOME" value="../../Tools/eclipseMars/" />
+	<property name="LogParser.location" value="../LogParser" />
+	<property name="debuglevel" value="source,lines,vars" />
+	<property name="target" value="1.8" />
+	<property name="source" value="1.8" />
+	<property name="projectName" value="FileConsumer" />
+	<property name="src.dir" location="src" />
+	<property name="build.dir" location="bin" />
+	<property name="dist.dir" location="dist" />
+	<property name="dist.lib.dir" location="dist/lib" />
+	<property name="lib.dir" value="lib" />
+	<property name="main-class" value="com.albertodepaola.fileconsumer.FileConsumer" />
+	<path id="LogParser.classpath">
+		<pathelement location="${LogParser.location}/bin" />
+		<pathelement location="${LogParser.location}/lib/flyway-core-5.0.6.jar" />
+		<pathelement location="${LogParser.location}/lib/mysql-connector-java-8.0.8-dmr-bin.jar" />
+		<pathelement location="${LogParser.location}/lib/gson-2.8.2.jar" />
+		<pathelement location="${LogParser.location}/lib/moneta-1.1.jar" />
+		<pathelement location="${LogParser.location}/lib/money-api-1.0.1.jar" />
+	</path>
+	<path id="FileConsumer.classpath">
+		<pathelement location="bin" />
+		<path refid="LogParser.classpath" />
+	</path>
+	<target name="init">
+		<mkdir dir="bin" />
+		<copy includeemptydirs="false" todir="bin">
+			<fileset dir="src">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+	<target name="clean">
+		<delete dir="bin" />
+	</target>
+	<target depends="clean" name="cleanall">
+		<ant antfile="build.xml" dir="${LogParser.location}" inheritAll="false" target="clean" />
+	</target>
+	<target depends="build-subprojects,build-project" name="build" />
+	<target name="build-subprojects">
+		<ant antfile="build.xml" dir="${LogParser.location}" inheritAll="false" target="build-project">
+			<propertyset>
+				<propertyref name="build.compiler" />
+			</propertyset>
+		</ant>
+	</target>
+	<target depends="init" name="build-project">
+		<echo message="${ant.project.name}: ${ant.file}" />
+		<javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+			<src path="src" />
+			<classpath refid="FileConsumer.classpath" />
+		</javac>
+	</target>
+	<target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects" />
+	<target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+		<copy todir="${ant.library.dir}">
+			<fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar" />
+		</copy>
+		<unzip dest="${ant.library.dir}">
+			<patternset includes="jdtCompilerAdapter.jar" />
+			<fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar" />
+		</unzip>
+	</target>
+	<target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+		<property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter" />
+		<antcall target="build" />
+	</target>
+	<target name="FileConsumer">
+		<java classname="com.albertodepaola.fileconsumer.FileConsumer" failonerror="true" fork="yes">
+			<env key="HOMEPATH" value="/home/alberto/workspace-mars/FileConsumer" />
+			<classpath refid="FileConsumer.classpath" />
+		</java>
+	</target>
+	<target name="Synchronized1">
+		<java classname="com.albertodepaola.fileconsumer.async.Synchronized1" failonerror="true" fork="yes">
+			<classpath refid="FileConsumer.classpath" />
+		</java>
+	</target>
+	<target name="FileExecutorService">
+		<java classname="com.albertodepaola.fileconsumer.async.FileExecutorService" failonerror="true" fork="yes">
+			<classpath refid="FileConsumer.classpath" />
+		</java>
+	</target>
+	<target name="Executors3">
+		<java classname="com.albertodepaola.fileconsumer.async.Executors3" failonerror="true" fork="yes">
+			<classpath refid="FileConsumer.classpath" />
+		</java>
+	</target>
+	<target name="copy-dependencies">
+
+		<mkdir dir="${dist.lib.dir}" />
+
+		<jar jarfile="${dist.lib.dir}/dependencies-all.jar">
+			<zipgroupfileset dir="${lib.dir}">
+				<include name="**/*.jar" />
+			</zipgroupfileset>
+		</jar>
+
+	</target>
+	<target name="build-jar" depends="build, copy-dependencies" description="Builds the jar with dependecies">
+
+		<mkdir dir="${dist.dir}" />
+		<mkdir dir="${dist.lib.dir}" />
+
+		<jar destfile="${dist.dir}/{projectName}.jar" basedir="${build.dir}">
+			<zipfileset src="${dist.lib.dir}/dependencies-all.jar" excludes="META-INF/*.SF" />
+		</jar>
+
+	</target>
+</project>
