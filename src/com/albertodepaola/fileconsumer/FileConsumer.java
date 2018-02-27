@@ -13,20 +13,22 @@ public class FileConsumer {
 
 	public static void main(String[] args){
 
-		// TODO move to config
-		String homePath = System.getenv("HOMEPATH");
-		String homePathIn = homePath + DATA_IN;
-		String homePathOut = homePath + DATA_OUT;
 		
+		String homePath = System.getenv("HOMEPATH");
 		if(homePath == null || homePath.isEmpty()) {
 			throw new IllegalArgumentException("HOMEPATH variable not setted.");
 		}
 		
-		
+		// TODO colocar em configuração
+		// Toma a variavel de ambiente HOMEPATH e cria o diretorio de entrada e o de saida   
+		String homePathIn = homePath + DATA_IN;
+		String homePathOut = homePath + DATA_OUT;
+				
 		Path dirIn = Paths.get(homePathIn);
 		Path dirOut = Paths.get(homePathOut);
 		
 		try {
+			// cria e inicia o serviço de verificação do diretorio de entrada
 			DirectoryWatcherService dws = new DirectoryWatcherService(dirIn, dirOut);
 			dws.start();
 			
