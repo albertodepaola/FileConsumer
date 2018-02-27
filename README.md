@@ -1,5 +1,5 @@
 # FileConsumer
-Simple java app to watch a directory, process its contents and parsed the configured files with [LogParser](https://github.com/albertodepaola/logparser).
+Simple java app to watch a directory, process its contents and parses the configured files with [LogParser](https://github.com/albertodepaola/logparser).
 
 # Installation
 To run the code [java 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) is required. To build it, [ant](http://ant.apache.org/) is used.
