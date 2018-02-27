@@ -1,6 +1,5 @@
 package com.albertodepaola.fileconsumer.async;
 
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 
 import java.io.File;
@@ -9,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import com.albertodepaola.fileconsumer.model.Status;
 import com.albertodepaola.fileconsumer.model.Tuple;
 
 /**
@@ -79,7 +80,7 @@ public class DirectoryWatcherService {
 		try {
 
 			// Primeiro verificar os arquivos já existentes no diretorio
-			List<Future<Tuple<String, File>>> results = new ArrayList<>();
+			List<Future<Tuple<Status, File>>> results = new ArrayList<>();
 			String[] list = dirIn.toFile().list(new FilenameFilter() {
 
 				@Override
@@ -88,7 +89,7 @@ public class DirectoryWatcherService {
 				}
 			});
 			for (String filename : list) {
-				Future<Tuple<String, File>> existingFile = FileExecutorService
+				Future<Tuple<Status, File>> existingFile = FileExecutorService
 						.submitFile(dirIn.resolve(filename).toFile());
 
 				results.add(existingFile);
@@ -121,7 +122,7 @@ public class DirectoryWatcherService {
 					WatchEvent<Path> ev = (WatchEvent<Path>) event;
 
 					// envia o arquivo para ser parseado e guarda um futuro
-					Future<Tuple<String, File>> submitFile = FileExecutorService
+					Future<Tuple<Status, File>> submitFile = FileExecutorService
 							.submitFile(dirIn.resolve(ev.context()).toFile());
 
 					results.add(submitFile);
@@ -146,7 +147,7 @@ public class DirectoryWatcherService {
 	 * 
 	 * @param results
 	 */
-	private void processResults(List<Future<Tuple<String, File>>> results) {
+	private void processResults(List<Future<Tuple<Status, File>>> results) {
 
 		// para cada resultado, executa em paralelo, já que a ordem da lista não
 		// define a ordem do retorno de future.get()
@@ -154,14 +155,15 @@ public class DirectoryWatcherService {
 			try {
 
 				// quando ainda não finalizou o parse, fica aguardando aqui
-				Tuple<String, File> result = future.get();
+				Tuple<Status, File> result = future.get();
 
-				if ("OK".equals(result.x)) {
+				
+				if (Status.OK.equals(result.x)) {
 					Files.move(result.y.toPath(), dirOut.resolve(result.y.toPath().getFileName().toString()
-							.replace(ACCEPTED_EXTENSION, ACCEPTED_EXTENSION_DONE)), REPLACE_EXISTING);
+							.replace(ACCEPTED_EXTENSION, ACCEPTED_EXTENSION_DONE)), StandardCopyOption.REPLACE_EXISTING);
 				} else {
 					Files.move(result.y.toPath(), dirOut.resolve(result.y.toPath().getFileName().toString()
-							.replace(ACCEPTED_EXTENSION, ACCEPTED_EXTENSION_ERROR)), REPLACE_EXISTING);
+							.replace(ACCEPTED_EXTENSION, ACCEPTED_EXTENSION_ERROR)), StandardCopyOption.REPLACE_EXISTING);
 				}
 			} catch (Exception e) {
 				throw new IllegalStateException(e);

@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import com.albertodepaola.fileconsumer.model.Status;
 import com.albertodepaola.fileconsumer.model.Tuple;
 import com.albertodepaola.logparser.Parser;
 import com.albertodepaola.logparser.factory.ABParserFactory;
@@ -20,9 +21,9 @@ public class FileExecutorService {
 
 	private static ExecutorService executor;
 	
-	private static Callable<Tuple<String, File>> callable(File fileToParse) {
+	private static Callable<Tuple<Status, File>> callable(File fileToParse) {
 		return () -> {
-			String status = "OK";
+			Status status = Status.OK;
 			try {
 				Map<String, String> argumentsMap = new HashMap<>();
 				
@@ -43,21 +44,21 @@ public class FileExecutorService {
 			
 			} catch (Exception e) {
 				e.printStackTrace();
-				status = "NOK";
+				status = Status.ERROR;
 			}
 			
-			return new Tuple<String, File>(status, fileToParse);
+			return new Tuple<Status, File>(status, fileToParse);
 		};
 	}
 
 
-	public static Future<Tuple<String, File>> submitFile(File file) {
+	public static Future<Tuple<Status, File>> submitFile(File file) {
 		
-		Callable<Tuple<String, File>> c = callable(file);
+		Callable<Tuple<Status, File>> c = callable(file);
 
 		ExecutorService ex = getExecutor();
 		
-		Future<Tuple<String, File>> submit = ex.submit(c);
+		Future<Tuple<Status, File>> submit = ex.submit(c);
 		
 		return submit;
 		
