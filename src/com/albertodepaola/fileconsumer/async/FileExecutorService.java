@@ -3,7 +3,6 @@ package com.albertodepaola.fileconsumer.async;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -54,9 +53,7 @@ public class FileExecutorService {
 				
 				argumentsMap.put("accesslog", fileToParse.getAbsolutePath());
 				// TODO solve config issue coupling
-				argumentsMap.put("configFile", "config.json");
 				Configuration.loadConfigurationFromJsonFile("config.json");
-							
 			
 				Parser<ABParserResult> abparser = new ParserFactory<ABParserResult>().createParser(new ABParserFactory(), argumentsMap);
 				
@@ -82,7 +79,7 @@ public class FileExecutorService {
 	public static Future<Tuple<String, File>> submitFile(File file) {
 		
 		Callable<Tuple<String, File>> c = callable(file);
-//		CallableParse c = new FileExecutorService().new CallableParse(file);
+
 		ExecutorService ex = getExecutor();
 		
 		Future<Tuple<String, File>> submit = ex.submit(c);

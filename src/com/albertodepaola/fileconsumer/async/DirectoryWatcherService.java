@@ -22,6 +22,9 @@ import com.albertodepaola.fileconsumer.model.Tuple;
 
 public class DirectoryWatcherService {
 
+	private static final String ACCEPTED_EXTENSION_ERROR = ".error.dat";
+	private static final String ACCEPTED_EXTENSION_DONE = ".done.dat";
+	private static final String ACCEPTED_EXTENSION = ".dat";
 	private Path dirIn;
 	private Path dirOut;
 	private ExecutorService executor;
@@ -53,7 +56,7 @@ public class DirectoryWatcherService {
 
 				@Override
 				public boolean accept(File dir, String name) {
-					return name.endsWith(".dat");
+					return name.endsWith(ACCEPTED_EXTENSION);
 				}
 			});
 			for (String filename : list) {
@@ -74,13 +77,12 @@ public class DirectoryWatcherService {
 				key.reset();
 
 				for (WatchEvent<?> event : key.pollEvents()) {
-					System.out.println("Event kind:" + event.kind() + ". File affected: " + event.context() + ".");
 
-					if (!event.context().toString().endsWith(".dat")) {
+					if (!event.context().toString().endsWith(ACCEPTED_EXTENSION)) {
 						continue;
 					}
 
-					// TODO send file to executorservice to process async
+					@SuppressWarnings("unchecked")
 					WatchEvent<Path> ev = (WatchEvent<Path>) event;
 
 					Future<Tuple<String, File>> submitFile = FileExecutorService
@@ -109,16 +111,12 @@ public class DirectoryWatcherService {
 				Tuple<String, File> result = future.get();
 				
 				if ("OK".equals(result.x)) {
-					long startTime = System.currentTimeMillis();
-					Path move = Files.move(result.y.toPath(),
-							dirOut.resolve(result.y.toPath().getFileName().toString().replace(".dat", ".done.dat")),
+					Files.move(result.y.toPath(),
+							dirOut.resolve(result.y.toPath().getFileName().toString().replace(ACCEPTED_EXTENSION, ACCEPTED_EXTENSION_DONE)),
 							REPLACE_EXISTING);
-					long diff = System.currentTimeMillis() - startTime;
-					System.out.println("Move time: " + diff + " - " + (diff / 1000));
 				} else {
-					
-					Path move = Files.move(result.y.toPath(),
-							dirOut.resolve(result.y.toPath().getFileName().toString().replace(".dat", ".error.dat")),
+					Files.move(result.y.toPath(),
+							dirOut.resolve(result.y.toPath().getFileName().toString().replace(ACCEPTED_EXTENSION, ACCEPTED_EXTENSION_ERROR)),
 							REPLACE_EXISTING);
 				}
 			} catch (Exception e) {
