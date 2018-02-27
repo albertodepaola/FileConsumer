@@ -6,9 +6,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import com.albertodepaola.fileconsumer.model.Tuple;
 import com.albertodepaola.logparser.Parser;
@@ -20,30 +18,7 @@ import com.albertodepaola.logparser.model.ParserResult;
 
 public class FileExecutorService {
 
-	static int count = 0;
 	private static ExecutorService executor;
-	
-	public static void main(String[] args) {
-//		ExecutorService executor = Executors.newFixedThreadPool(3);
-		ExecutorService executor = Executors.newSingleThreadExecutor();
-		executor.submit(() -> {
-		    String threadName = Thread.currentThread().getName();
-		    System.out.println("Hello " + threadName);
-		    try {
-				TimeUnit.SECONDS.sleep(2);
-				System.out.println("After sleep");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		});
-		
-		executor.shutdown();
-		
-		System.out.println(ForkJoinPool.getCommonPoolParallelism()); 
-		
-		
-		
-	}
 	
 	private static Callable<Tuple<String, File>> callable(File fileToParse) {
 		return () -> {
